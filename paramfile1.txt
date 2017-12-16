@@ -1,0 +1,2 @@
+#temp   damping    tstep    totaltime
+273 .123    0.01   10
