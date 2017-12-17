@@ -1,5 +1,4 @@
 import numpy as np
-from .visualization import SimVis, start_server
 import io
 import asyncio
 
@@ -13,7 +12,7 @@ def read_energy(input_file):
     #print(data)
     #print(data[1][1])
     
-    for row in range(len(data)):   
+    for row in range(len(data)):
         indx.append(data[row][0])
         pos.append(data[row][1])
         energy.append(data[row][2])
@@ -136,7 +135,7 @@ def main_handler(posfile, parafile, mass, vel, outfile, olength):
     write_output(idxout,timeout,posout,velout,outfile)
 
 def start(): #pragma: no cover
-    sv = SimVis()
+    #sv = SimVis()
     print("This is a Langevin integrator utilizing the Verlet algorithm.")
     posfile = input("Enter the name of the file containing particle position information (format specified in readme): ")
     parafile = input("Enter the name of the file containing parameter information (format in readme): ")

@@ -1,6 +1,6 @@
 import io
 import numpy as np
-import Langevin477CO as lang
+import Schro1D as schro
 import os
 
 def test_read_energy_read():
@@ -16,7 +16,7 @@ def test_read_energy_read():
     '''
 
     test_file = io.StringIO(test_string)
-    indx, pos, energy, fx = lang.read_energy(test_file)
+    indx, pos, energy, fx = schro.read_energy(test_file)
     #print(pos)
     #print(energy)
     #print((np.isclose(pos, [0,1,2,3,4])).any())
@@ -33,7 +33,7 @@ def test_read_coefficients_read():
     273 .123    0.001   10
     '''
     test_file = io.StringIO(test_string)
-    temp, damp, tstep, totaltime = lang.read_coefficients(test_file)
+    temp, damp, tstep, totaltime = schro.read_coefficients(test_file)
 
     assert(np.isclose(temp,273))
     assert(np.isclose(damp, .123))
@@ -48,7 +48,7 @@ def test_write_output():
     test_pos = [-.432, 123]
     test_vel = [.234, 456]
     fname = "writetest.txt"
-    lang.write_output(test_idx,test_time,test_pos,test_vel,fname)
+    schro.write_output(test_idx,test_time,test_pos,test_vel,fname)
 
     file_data = np.loadtxt(fname)
     assert(np.isclose(file_data, test_data).any())
@@ -76,7 +76,7 @@ def test_main_handler():
     posfile = io.StringIO(posstring)
     parafile = io.StringIO(parastring)
     outfile = "handlertestout.txt"
-    lang.main_handler(posfile, parafile, mass, vel, outfile, olength)
+    schro.main_handler(posfile, parafile, mass, vel, outfile, olength)
     
     file_data = np.loadtxt(outfile)
     assert(len(file_data) == 15)
@@ -89,12 +89,12 @@ def test_temp_distribution():
     temp = 300
     damp = .123
     mean = np.zeros(nsam)
-    samples = lang.gdist(mean, temp, damp)
+    samples = schro.gdist(mean, temp, damp)
     print(len(samples))
     if np.absolute(np.average(samples)) >= 5:
         newavg = 0
         for i in range(3):
-            samples1 = lang.gdist(mean, temp, damp)
+            samples1 = schro.gdist(mean, temp, damp)
             newavg += np.average(samples1)
             samples1 = []
         assert(newavg <= 15)
@@ -110,7 +110,7 @@ def test_core_integrator_setup():
     mass = 1
     tstep = .01
     totaltime = 10
-    output = lang.core_integrator(xi,vi,ui,fi,la,temp,mass,tstep,totaltime)
+    output = schro.core_integrator(xi,vi,ui,fi,la,temp,mass,tstep,totaltime)
     print("Number of output variables: ")
     print(len(output))
     assert(len(output) == 5)
@@ -130,7 +130,7 @@ def test_integrator_conserve_potential():
     mass = 1
     tstep = .001
     totaltime = 200
-    output = lang.core_integrator(xi,vi,ui,fi,la,temp,mass,tstep,totaltime)
+    output = schro.core_integrator(xi,vi,ui,fi,la,temp,mass,tstep,totaltime)
     #output is xpos, accel, velocity, potential energy, and time
     print("Potential energy format looks like:")
     print(output[3])
@@ -150,7 +150,7 @@ def test_integrator_conserve_KE():
     mass = 1
     tstep = .001
     totaltime = 200
-    output = lang.core_integrator(xi,vi,ui,fi,la,temp,mass,tstep,totaltime)
+    output = schro.core_integrator(xi,vi,ui,fi,la,temp,mass,tstep,totaltime)
     #output is xpos, accel, velocity, potential energy, and time
     # avgKE = .5*mass*vel^2
     sum = 0

@@ -1,2 +1,2 @@
 def test_import():
-    import Langevin477CO
+    import Schro1D
