@@ -1,0 +1,6 @@
+#test input energy
+#i  V0  c   bs_coefficients   basis_set    domain 
+0,   1,   1,   3,   l,   -inf,    inf
+1,   0,   1,   1,   f,   -inf,    inf
+2,   1,   2,   2,   l,   -1,  1
+3,   1,   2,   2,   f,   -1,  1

@@ -1,23 +1,32 @@
 import numpy as np
 import io
 import asyncio
+import pandas as pd
 
-def read_energy(input_file):
-    #Get the index, position, energy, and force from the position/energy file
+def read_param(input_file):
+    #Get the index, potential energy, constant, # of basis set coefficients, basis set, and domain from file
+    #Basis set options are Legendre Polynomials (l) or Fourier-Legendre Polynomials (f)
     indx = []
-    pos = []
-    energy = []
-    fx = []
-    data = np.loadtxt(input_file)
+    V0 = []
+    const = []
+    n_bs = []
+    bs = []
+    domain = []
+    
+    data = np.genfromtxt(input_file, dtype=None, delimiter=",",autostrip=True)
+    print(data)
     #print(data)
     #print(data[1][1])
-    
+    #data2 = pd.read_csv(input_file)
+    #print(data2)
     for row in range(len(data)):
         indx.append(data[row][0])
-        pos.append(data[row][1])
-        energy.append(data[row][2])
-        fx.append(data[row][3]) 
-    return indx, pos, energy, fx
+        V0.append(data[row][1])
+        const.append(data[row][2])
+        n_bs.append(data[row][3])
+        bs.append(data[row][4]) 
+        domain.append((data[row][5], data[row][6]))
+    return indx, V0, const, n_bs, bs, domain
 
 
 def read_coefficients(input_file):
