@@ -37,4 +37,16 @@ def test_math_integrator():
     tstop = 2
     k = 1
     yout = schro.integrator_fou(schro.wavefunc_fou,k, [tstart, tstop])    
-    assert(np.isclose(yout[0],0))
+    assert(np.isclose(yout,0))
+
+def test_ham_generator():
+    '''Tests the hamiltonian generator.  Unfortunately, products are not edible'''
+    V0 = 1
+    const = 1
+    n_bs = 5
+    bs = b'f'
+    domain = [-1,1]
+    ham = np.matrix(schro.gen_ham(V0, const, n_bs, bs, domain))
+    print(ham)
+    #The Hamiltonian should be self-adjunct so...
+    assert(np.isclose(ham.H, ham).any())

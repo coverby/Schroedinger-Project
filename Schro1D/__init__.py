@@ -2,5 +2,6 @@
 from .schro import read_param
 from .schro import wavefunc_fou
 from .schro import integrator_fou
+from .schro import gen_ham
 from .schro import main_handler
 from .schro import start

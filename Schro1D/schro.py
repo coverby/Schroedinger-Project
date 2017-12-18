@@ -39,7 +39,27 @@ def integrator_fou(fun, k, domain):
     '''Using scipy's quadrature integrator for speed/accuracy/convenience'''
     t0 = domain[0]
     tf = domain[1]
-    return quad(fun, t0, tf, (k))
+    area = quad(fun, t0, tf, (k))
+    return area[0]
+
+def gen_ham(V0, const, n_bs, bs, domain):
+    ham = np.zeros([n_bs, n_bs])
+    if bs == b'f':
+        int_fun = integrator_fou
+        fun = wavefunc_fou
+        ham[0,0] = 0 + V0*int_fun(fun, 1, domain)  #math index starts at 1, so we adjust k up by 1
+        for i in range(1, n_bs):
+            ham[i,i] = 1/8*(np.pi**2)*(i**2) + V0*int_fun(fun, i+1, domain)
+            for j in range(i-1):
+                ham[i,j] = V0*int_fun(fun, j+1, domain)
+                ham[j,i] = ham[i,j]
+    elif bs == b'l':
+        print('Sorry, Legendgre Polynomials not yet supported')
+        return 0
+    else:
+        print('Basis set not recognized!')
+        return 0
+    return ham
 
 
 def main_handler(posfile, parafile, mass, vel, outfile, olength):
