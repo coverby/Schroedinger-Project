@@ -145,12 +145,6 @@ def main_handler(posfile, parafile, mass, vel, outfile, olength):
 
 def start(): #pragma: no cover
     #sv = SimVis()
-    print("This is a Langevin integrator utilizing the Verlet algorithm.")
-    posfile = input("Enter the name of the file containing particle position information (format specified in readme): ")
+    print("This is a 1D Numerical Shroedinger's Equation solver")
     parafile = input("Enter the name of the file containing parameter information (format in readme): ")
-    mass = float(input("Enter the particle mass: "))
-    assert(mass > 0), "Mass must be a positive, non-zero value!"
-    velocity = float(input("Enter particle velocity: "))
-    outfile = input("Enter the name of the output file: ")
-    olength = int(input("Enter how many timesteps for each particle you want in the output (enter 0 for all): "))
-    main_handler(posfile, parafile, mass, velocity, outfile, olength)
+
