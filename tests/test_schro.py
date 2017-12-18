@@ -25,3 +25,16 @@ def test_read_param_read():
     assert((np.isclose(n_bs, [3,-1,2,20])).any())
     assert(bs == [b'l', b'f', b'l', b'f'])  #I thought you were my friend, python
     assert((np.isclose(domain, [(-math.inf, math.inf), (-math.inf, math.inf), (-1, 1), (-1, 1)])).any())
+
+def test_wavefunc_fou():
+    '''Quick sanity check for the Fourier basis wavefunction'''
+    assert(np.isclose(schro.wavefunc_fou(0,1), 1))
+    assert(np.isclose(schro.wavefunc_fou(0,0), 0))
+
+def test_math_integrator():
+    '''Performs a quick test on the integrator function on sin(x)'''
+    tstart = 0
+    tstop = 2
+    k = 1
+    yout = schro.integrator_fou(schro.wavefunc_fou,k, [tstart, tstop])    
+    assert(np.isclose(yout[0],0))

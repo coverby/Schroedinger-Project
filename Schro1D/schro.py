@@ -1,7 +1,7 @@
 import numpy as np
 import io
 import asyncio
-import pandas as pd
+from scipy.integrate import quad
 
 def read_param(input_file):
     #Get the index, potential energy, constant, # of basis set coefficients, basis set, and domain from file
@@ -29,92 +29,18 @@ def read_param(input_file):
     return indx, V0, const, n_bs, bs, domain
 
 
-def read_coefficients(input_file):
-    #Get the temperature, damping coefficient, tstep, and total integration time from file
-    data = np.loadtxt(input_file)
-    
-    temp = data[0]
-    damp = data[1]
-    tstep = data[2]
-    totaltime = data[3]
-    return temp, damp, tstep, totaltime
+def wavefunc_fou(x, k):
+    if (k%2 == 0):
+        return np.sin(k*np.pi*x/2)
+    else:
+        return np.cos(k*np.pi*x/2)
 
+def integrator_fou(fun, k, domain):
+    '''Using scipy's quadrature integrator for speed/accuracy/convenience'''
+    t0 = domain[0]
+    tf = domain[1]
+    return quad(fun, t0, tf, (k))
 
-def gdist(mean,temp,damp):
-    #Generate Gaussian distributed eta for thermal disturbance
-    sample = []
-    var = np.multiply(np.multiply(2,temp),damp)
-    for i in range(len(mean)):
-        sample.append(np.random.normal(mean[i],var,1))
-    return sample 
-
-def write_output(idx, time, pos, vel, outname):
-    #Write the output file containing index, time, position, and velocity of particles
-    assert((len(idx) == len(time)) == (len(pos) == len(vel)))
-    header_string = "#Index  Time    Position    Velocity"
-    outfile = open(outname, "w")
-    outfile.write(header_string)
-    outfile.write("\n")
-    for i in range(len(idx)):
-        outfile.write("\t".join( (str(idx[i]), str(time[i]), str(pos[i]), str(vel[i])) ))
-        outfile.write("\n")
-    outfile.close()
-    
-
-def core_integrator(xi, vi, ui, fi, la, temp, mass, tstep, totaltime):
-    #Core integrator using Velocity Verlet algorithm for Langevin equation
-    totalsteps = int(np.floor(totaltime/tstep)) + 1
-    assert(totalsteps > 2) #Check that we actually at least 2 time points
-    xpos = np.zeros(totalsteps)
-    accel = np.zeros(totalsteps)
-    vel = np.zeros(totalsteps)
-    potential = np.zeros(totalsteps)
-    time = np.zeros(totalsteps)
-    xpos[0] = xi
-    accel[0] = fi/mass
-    vel[0] = vi
-    potential[0] = ui
-    try: #An edge case here is if the position is exactly zero at the start
-        kcoeff = potential[0]*2/(xpos[0]**2)
-    except ZeroDivisionError:
-        if np.isclose(0,potential[0]):
-            kcoeff = 0 #Kind of a cludge, but garbage in garbage out
-        else:
-            kcoeff = potential[0]/(.001) #Also very much a cludge
-
-    sample = gdist(time, temp, la)
-    time[1] = tstep
-
-    #Create timestep one for the Velocity Verlet Algorithm
-    #x(t+dt) = x + v(t)*dt + 1/2*a(t)*dt^2
-    #a(t+dt) from x(t+dt) using interaction potential
-    #v(t+dt) = v(t) + (a(t) + a(t+dt))/2*dt
-
-    xpos[1] = xpos[0] + vel[0]*tstep
-    potential[1] = .5*kcoeff*xpos[1]**2
-    accel[1] = (-la*vel[0] + sample[1]*tstep - 2*potential[1]/xpos[1])/mass
-    vel[1] = vel[0] + (accel[0] + accel[1])*.5*tstep
-
-    #Using the Velocity Verlet integration algorithm
-    #Calculate new intermediate velocity, v(t+dt/2) = v + 1/2*a*dt
-    #Calculate new position, x(t+dt) = x + v(t+dt/2)*dt
-    #Calculate new acceleration from interaction potential
-    #a(t+dt) = F(x(t+dt))
-    #Calculate new end velocity
-    #v(t+dt) = v(t+dt/2) + 1/2*a(t+dt)*dt
-
-    for i in range(2,totalsteps):
-        velint = vel[i-1] + .5*accel[i-1]*tstep
-        xpos[i] = xpos[i-1] + velint*tstep
-
-        potential[i] = .5*kcoeff*xpos[i]**2
-        accel[i] = (-la*velint + sample[i]*tstep - kcoeff*xpos[i])/mass
-
-        vel[i] = velint + .5*accel[i]*tstep
-        time[i] = time[i-1] + tstep
-
-
-    return xpos, accel, vel, potential, time
 
 def main_handler(posfile, parafile, mass, vel, outfile, olength):
     #This function coordinates the other components after initialization
