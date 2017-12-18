@@ -31,13 +31,35 @@ def test_wavefunc_fou():
     assert(np.isclose(schro.wavefunc_fou(0,1), 1))
     assert(np.isclose(schro.wavefunc_fou(0,0), 0))
 
+def test_wavefunc_fou2():
+    '''Quick sanity check for the two-k Fourier basis wavefunction'''
+    assert(np.isclose(schro.wavefunc_fou2(0,1,0), 0))
+    assert(np.isclose(schro.wavefunc_fou2(0,0,0), 0))
+    assert(np.isclose(schro.wavefunc_fou2(0,1,1), 1))
+
 def test_math_integrator():
     '''Performs a quick test on the integrator function on sin(x)'''
     tstart = 0
     tstop = 2
-    k = 1
-    yout = schro.integrator_fou(schro.wavefunc_fou,k, [tstart, tstop])    
+    k = 7
+    yout = schro.integrator_fou(schro.wavefunc_fou,k, [tstart, tstop])  
+    print(yout)  
     assert(np.isclose(yout,0))
+
+def test_math_integrator2():
+    '''Performs a quick test on the integrator function on sin(x)'''
+    tstart = -1
+    tstop = 1
+    k1 = 3
+    k2 = 2
+    yout = schro.integrator_fou(schro.wavefunc_fou2,(k1, k2), [tstart, tstop])  
+    print(yout)  
+    assert(np.isclose(yout,0))
+    k1 = 2
+    k2 = 2
+    yout = schro.integrator_fou(schro.wavefunc_fou2,(k1, k2), [tstart, tstop])  
+    print(yout)  
+    assert(np.isclose(yout,1))
 
 def test_ham_generator():
     '''Tests the hamiltonian generator.  Unfortunately, products are not edible'''
@@ -50,3 +72,19 @@ def test_ham_generator():
     print(ham)
     #The Hamiltonian should be self-adjunct so...
     assert(np.isclose(ham.H, ham).any())
+
+def test_diagonalize():
+    '''Tests the hamiltonian diagonalizer via the normalized eigenvectors '''
+    V0 = 1
+    const = 1
+    n_bs = 6
+    bs = b'f'
+    domain = [-1,1]
+    ham = np.matrix(schro.gen_ham(V0, const, n_bs, bs, domain))
+    #The Hamiltonian should be self-adjunct so...
+    eig, v = schro.diagonalize(ham)
+    #print(ham)
+    #print(eig)
+    #print(v)
+    #print(np.diagonal(np.absolute(v)).sum())
+    assert(np.isclose(np.diagonal(np.absolute(v)).sum(), n_bs,rtol=1.e-2))
