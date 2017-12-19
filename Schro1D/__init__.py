@@ -4,6 +4,7 @@ from .schro import wavefunc_fou
 from .schro import wavefunc_fou2
 from .schro import legendre_gen
 from .schro import legendre_deriv_gen
+from .schro import legendre_combo
 from .schro import integrator_fou
 from .schro import gen_ham
 from .schro import diagonalize

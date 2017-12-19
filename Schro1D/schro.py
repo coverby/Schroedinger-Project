@@ -71,18 +71,27 @@ def legendre_gen(x, n):
     return p
 
 def legendre_deriv_gen(x, n):
-    '''Generates first derivative of the first n legendre polynomials of x'''
-    p1 = []
-    p1.append(0)
+    '''Generates first and second derivatives of the first n legendre polynomials of x'''
+    p2 = []
+    p2.append(0)
     if (n == 1):
-        return p1
-    p1.append(1)
+        return p2
+    p2.append(0)
     if (n == 2):
         return p1
+    p1 = []
+    p1.append(0)
+    p1.append(1)
     bp = legendre_gen(x,n) #grab the polynomial evaluations at x
     for i in range(2,n):
         p1.append(i*bp[i-1] + x*p1[i-1]) #Very convenient first derivative
-    return p1
+        p2.append(i*p1[i-1] + x*p2[i-1] + p1[i-1]) #And easily drived second
+    return p2
+
+def legendre_combo(x, n1, n2):
+    out1 = legendre_gen(x, n1)[-1]
+    out2 = legendre_gen(x, n2)[-1]
+    return out1*out2
 
 def gen_ham(V0, const, n_bs, bs, domain):
     ham = np.zeros([n_bs, n_bs])
@@ -96,6 +105,7 @@ def gen_ham(V0, const, n_bs, bs, domain):
                 ham[i,j] = V0*int_fun(fun, (j+1,i+1), domain)
                 ham[j,i] = ham[i,j] #orthonormal => symmetric, so we can cheat
     elif bs == b'l':
+        int_fun = integrator_fou
         print('Sorry, Legendgre Polynomials not yet supported')
         return 0
     else:

@@ -51,7 +51,7 @@ def test_legendre_gen():
     #This is such a nice basis set for these sorts of things
 
 def test_legendre_deriv_gen():
-    '''Test the output of the legendre polynomial first derivative generator'''
+    '''Test the output of the legendre polynomial second derivative generator'''
     n = 5
     x1 = 0
     x2 = 1
@@ -59,9 +59,9 @@ def test_legendre_deriv_gen():
     print(schro.legendre_deriv_gen(x1, n))
     print(schro.legendre_deriv_gen(x2, n))
     print(schro.legendre_deriv_gen(x3, n))
-    assert(np.isclose(schro.legendre_deriv_gen(x1, n), [0, 1, 0, -1.5, 0]).all())
-    assert(np.isclose(schro.legendre_deriv_gen(x2, n), [0, 1, 3, 6, 10]).all())
-    assert(np.isclose(schro.legendre_deriv_gen(x3, n), [0, 1, -3, 6, -10]).all())
+    assert(np.isclose(schro.legendre_deriv_gen(x1, n), [0, 0, 3, 0, -7.5]).all())
+    assert(np.isclose(schro.legendre_deriv_gen(x2, n), [0, 0, 3, 15, 45]).all())
+    assert(np.isclose(schro.legendre_deriv_gen(x3, n), [0, 0, 3, -15, 45]).all())
     #This is such a nice basis set for these sorts of things
 
 def test_math_integrator():
@@ -74,7 +74,7 @@ def test_math_integrator():
     assert(np.isclose(yout,0))
 
 def test_math_integrator2():
-    '''Performs a quick test on the integrator function on sin(x)'''
+    '''Performs a quick test on the integrator function on fourier basis'''
     tstart = -1
     tstop = 1
     k1 = 3
@@ -87,6 +87,16 @@ def test_math_integrator2():
     yout = schro.integrator_fou(schro.wavefunc_fou2,(k1, k2), [tstart, tstop])  
     print(yout)  
     assert(np.isclose(yout,1))
+
+def test_math_integrator_leg():
+    '''Performs a quick test on the integrator function legendre polynomials'''
+    tstart = -1
+    tstop = 1
+    n1  = 2
+    n2 = 3
+    yout = schro.integrator_fou(schro.legendre_combo, (n1, n2), [tstart, tstop])  
+    print(yout)  
+    assert(np.isclose(yout,0))
 
 def test_ham_generator():
     '''Tests the hamiltonian generator.  Unfortunately, products are not edible'''
