@@ -94,9 +94,12 @@ def test_math_integrator_leg():
     tstop = 1
     n1  = 2
     n2 = 3
-    yout = schro.integrator_fou(schro.legendre_combo, (n1, n2), [tstart, tstop])  
-    print(yout)  
-    assert(np.isclose(yout,0))
+    yout1 = schro.integrator_fou(schro.legendre_combo, (n1, n2), [tstart, tstop])
+    yout2 = schro.integrator_fou(schro.legendre_combo, (n2, n2), [tstart, tstop])  
+    print(yout1)
+    print(yout2)  
+    assert(np.isclose(yout1, 0))
+    assert(np.isclose(yout2, 0.4))
 
 def test_ham_generator():
     '''Tests the hamiltonian generator.  Unfortunately, products are not edible'''
