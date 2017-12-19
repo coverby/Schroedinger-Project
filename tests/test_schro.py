@@ -37,6 +37,19 @@ def test_wavefunc_fou2():
     assert(np.isclose(schro.wavefunc_fou2(0,0,0), 0))
     assert(np.isclose(schro.wavefunc_fou2(0,1,1), 1))
 
+def test_legendre_gen():
+    '''Test the output of the recursive legendre polynomial generator'''
+    n = 4
+    x1 = 0
+    x2 = 1
+    x3 = -1
+    print(schro.legendre_gen(x1, n))
+    print(schro.legendre_gen(x2, n))
+    assert(np.isclose(schro.legendre_gen(x1, n), [1, 0, -.5, 0]).all())
+    assert(np.isclose(schro.legendre_gen(x2, n), [1, 1, 1, 1]).all())
+    assert(np.isclose(schro.legendre_gen(x3, n), [1, -1, 1, -1]).all())
+    #This is such a nice basis set for these sorts of things
+
 def test_math_integrator():
     '''Performs a quick test on the integrator function on sin(x)'''
     tstart = 0

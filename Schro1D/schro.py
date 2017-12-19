@@ -55,6 +55,21 @@ def integrator_fou(fun, k, domain):
     area = quad(fun, t0, tf, (k))
     return area[0]
 
+def legendre_gen(x, n):
+    '''Generate the first n legendre polynomials of x using Bonnet's Recursion'''
+    if (n <= 0):
+        return -1
+    p = []
+    p.append(1)
+    if (n == 1):
+        return p
+    p.append(x)
+    if (n == 2):
+        return p
+    for i in range(1,n-1):
+        p.append(((2*i+1)*x*p[i] - i*p[i-1])/(i+1))
+    return p
+
 def gen_ham(V0, const, n_bs, bs, domain):
     ham = np.zeros([n_bs, n_bs])
     if bs == b'f':
