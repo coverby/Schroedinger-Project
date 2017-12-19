@@ -57,9 +57,9 @@ def integrator_fou(fun, k, domain):
 
 def legendre_gen(x, n):
     '''Generate the first n legendre polynomials of x using Bonnet's Recursion'''
-    if (n <= 0):
-        return -1
     p = []
+    if (n < 0):
+        return -1
     p.append(1)
     if (n == 1):
         return p
@@ -113,8 +113,14 @@ def gen_ham(V0, const, n_bs, bs, domain):
                 ham[j,i] = ham[i,j] #orthonormal => symmetric, so we can cheat
     elif bs == b'l':
         int_fun = integrator_fou
-        print('Sorry, Legendgre Polynomials not yet supported')
-        return 0
+        fun1 = legendre_combo
+        fun2 = legendre_deriv_combo
+        #ham[0,0] = const*int_fun(fun2, (1,1), domain) + V0*int_fun(fun1, (1,1), domain)
+        for i in range(0, n_bs):
+            ham[i,i] = V0*int_fun(fun1, (i+1,i+1), domain)  #- const*int_fun(fun2, (i+1,i+1), domain)
+            for j in range(n_bs):
+                ham[i,j] = -const*int_fun(fun2, (i+1,j+1), domain) + V0*int_fun(fun1, (i+1,j+1), domain)
+                ham[j,i] = ham[i,j] #orthonormal => symmetric, so we can cheat
     else:
         print('Basis set not recognized!')
         return 0
@@ -125,35 +131,34 @@ def diagonalize(ham):
     arr = np.matrix(ham)
     return sLA.eigh(arr) #returns eigenvector w, and (hopefully) ones-diagonal matrix v
 
-def main_handler(posfile, parafile, mass, vel, outfile, olength):
-    #This function coordinates the other components after initialization
-    idx, pos, energy, force = read_energy(posfile)
-    temp, damp, tstep, totaltime = read_coefficients(parafile)
-
-    idxout = []
-    
-    posout = []
-    aclout = []
-    velout = []
-    potout = []
-    timeout = []
-
-    assert(olength<=int(np.floor(totaltime/tstep))), "Desired output length longer than expected time steps!"
-
+def write_output(idx, vout, outname):
+    '''Write the output file containing index and basis set coefficients'''
+    header_string = "#Index  #Basis Set Coefficients"
+    outfile = open(outname, "w")
+    outfile.write(header_string)
+    outfile.write("\n")
     for i in range(len(idx)):
-        output = core_integrator(pos[i],vel,energy[i],force[i],damp,temp,mass,tstep,totaltime)
+        outfile.write("\t".join( (str(idx[i]), str(vout[i]) )))
+        outfile.write("\n")
+    outfile.close()
 
-        idxout.extend(np.multiply(np.ones(olength),idx[i]))
-        posout.extend(output[0][-olength:])
-        aclout.extend(output[1][-olength:])
-        velout.extend(output[2][-olength:])
-        potout.extend(output[3][-olength:])
-        timeout.extend(output[4][-olength:])
+def main_handler(parafile, outfile): #pragma: no cover
+    #This function coordinates the other components after initialization
+    indx, V0, const, n_bs, bs, domain = schro.read_param(test_file)
+    idxout = []
+    vout = []
+    for i in range(len(idx)):
+        output = diagonalize(gen_ham(V0[i],const[i],n_bs[i],bs[i],domain[i]))
+
+        idxout.append(i)
+        vout.append(output)
         
-    write_output(idxout,timeout,posout,velout,outfile)
+    write_output(idxout,vout,outfile)
 
 def start(): #pragma: no cover
     #sv = SimVis()
     print("This is a 1D Numerical Shroedinger's Equation solver")
     parafile = input("Enter the name of the file containing parameter information (format in readme): ")
+    outfile = input("Enter the name of the output file to save output to")
+    main_handler()
 

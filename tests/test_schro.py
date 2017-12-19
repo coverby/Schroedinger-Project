@@ -14,8 +14,6 @@ def test_read_param_read():
     2,   1,   2,   2,   l,   -1,  1
     3,   1,   2,   2,   f,   -1,  1
     '''
-
-
     test_file = 'tests/testfile1.txt'
     indx, V0, const, n_bs, bs, domain = schro.read_param(test_file)
     #print((np.isclose(pos, [0,1,2,3,4])).any())
@@ -25,6 +23,17 @@ def test_read_param_read():
     assert((np.isclose(n_bs, [3,-1,2,20])).any())
     assert(bs == [b'l', b'f', b'l', b'f'])  #I thought you were my friend, python
     assert((np.isclose(domain, [(-math.inf, math.inf), (-math.inf, math.inf), (-1, 1), (-1, 1)])).any())
+
+def test_write_output():
+    #Test the ability to write correctly formatted output text files.
+    test_idx = [1, 2]
+    test_vector = [[1,2,3], [4,5,6]]
+    fname = "writetest.txt"
+    schro.write_output(test_idx,test_vector,fname)
+
+    file_data = np.genfromtxt(fname)
+    assert(np.isclose(file_data[1][0], test_idx[1]))
+    os.remove(fname)
 
 def test_wavefunc_fou():
     '''Quick sanity check for the Fourier basis wavefunction'''
@@ -119,6 +128,18 @@ def test_ham_generator():
     #The Hamiltonian should be self-adjunct so...
     assert(np.isclose(ham.H, ham).any())
 
+def test_ham_generator_leg():
+    '''Tests the hamiltonian generator for legendre basis'''
+    V0 = 1
+    const = 1
+    n_bs = 5
+    bs = b'l'
+    domain = [-1,1]
+    ham = np.matrix(schro.gen_ham(V0, const, n_bs, bs, domain))
+    print(ham)
+    #The Hamiltonian should be self-adjunct so...
+    assert(np.isclose(ham.H, ham).any())
+
 def test_diagonalize():
     '''Tests the hamiltonian diagonalizer via the normalized eigenvectors '''
     V0 = 1
@@ -133,4 +154,20 @@ def test_diagonalize():
     #print(eig)
     #print(v)
     #print(np.diagonal(np.absolute(v)).sum())
+    assert(np.isclose(np.diagonal(np.absolute(v)).sum(), n_bs,rtol=1.e-2))
+
+def test_diagonalize_leg():
+    '''Tests the hamiltonian diagonalizer for a legendre basis via the normalized eigenvectors '''
+    V0 = 1
+    const = 1
+    n_bs = 6
+    bs = b'l'
+    domain = [-1,1]
+    ham = np.matrix(schro.gen_ham(V0, const, n_bs, bs, domain))
+    #The Hamiltonian should be self-adjunct so...
+    eig, v = schro.diagonalize(ham)
+    print(ham)
+    print(eig)
+    print(v)
+    print((np.absolute(v)).sum())
     assert(np.isclose(np.diagonal(np.absolute(v)).sum(), n_bs,rtol=1.e-2))
