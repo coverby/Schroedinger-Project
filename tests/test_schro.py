@@ -50,6 +50,20 @@ def test_legendre_gen():
     assert(np.isclose(schro.legendre_gen(x3, n), [1, -1, 1, -1]).all())
     #This is such a nice basis set for these sorts of things
 
+def test_legendre_deriv_gen():
+    '''Test the output of the legendre polynomial first derivative generator'''
+    n = 5
+    x1 = 0
+    x2 = 1
+    x3 = -1
+    print(schro.legendre_deriv_gen(x1, n))
+    print(schro.legendre_deriv_gen(x2, n))
+    print(schro.legendre_deriv_gen(x3, n))
+    assert(np.isclose(schro.legendre_deriv_gen(x1, n), [0, 1, 0, -1.5, 0]).all())
+    assert(np.isclose(schro.legendre_deriv_gen(x2, n), [0, 1, 3, 6, 10]).all())
+    assert(np.isclose(schro.legendre_deriv_gen(x3, n), [0, 1, -3, 6, -10]).all())
+    #This is such a nice basis set for these sorts of things
+
 def test_math_integrator():
     '''Performs a quick test on the integrator function on sin(x)'''
     tstart = 0

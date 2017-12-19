@@ -70,6 +70,20 @@ def legendre_gen(x, n):
         p.append(((2*i+1)*x*p[i] - i*p[i-1])/(i+1))
     return p
 
+def legendre_deriv_gen(x, n):
+    '''Generates first derivative of the first n legendre polynomials of x'''
+    p1 = []
+    p1.append(0)
+    if (n == 1):
+        return p1
+    p1.append(1)
+    if (n == 2):
+        return p1
+    bp = legendre_gen(x,n) #grab the polynomial evaluations at x
+    for i in range(2,n):
+        p1.append(i*bp[i-1] + x*p1[i-1]) #Very convenient first derivative
+    return p1
+
 def gen_ham(V0, const, n_bs, bs, domain):
     ham = np.zeros([n_bs, n_bs])
     if bs == b'f':
