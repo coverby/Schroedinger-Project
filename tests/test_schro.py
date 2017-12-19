@@ -92,14 +92,20 @@ def test_math_integrator_leg():
     '''Performs a quick test on the integrator function legendre polynomials'''
     tstart = -1
     tstop = 1
-    n1  = 2
+    n1  = 4
     n2 = 3
     yout1 = schro.integrator_fou(schro.legendre_combo, (n1, n2), [tstart, tstop])
-    yout2 = schro.integrator_fou(schro.legendre_combo, (n2, n2), [tstart, tstop])  
+    yout2 = schro.integrator_fou(schro.legendre_combo, (n2, n2), [tstart, tstop])
+    yout3 = schro.integrator_fou(schro.legendre_deriv_combo, (n1, n2), [tstart, tstop])
+    yout4 = schro.integrator_fou(schro.legendre_deriv_combo, (n2, n2), [tstart, tstop])   
     print(yout1)
     print(yout2)  
-    assert(np.isclose(yout1, 0))
-    assert(np.isclose(yout2, 0.4))
+    print(yout3)
+    print(yout4)
+    assert(np.isclose(yout1, 0)) #Orthogonal
+    assert(np.isclose(yout2, 0.4)) #Checked by hand
+    assert(np.isclose(yout3, 0))
+    assert(np.isclose(yout4, 0))
 
 def test_ham_generator():
     '''Tests the hamiltonian generator.  Unfortunately, products are not edible'''

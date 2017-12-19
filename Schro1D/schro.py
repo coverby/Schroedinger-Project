@@ -78,7 +78,7 @@ def legendre_deriv_gen(x, n):
         return p2
     p2.append(0)
     if (n == 2):
-        return p1
+        return p2
     p1 = []
     p1.append(0)
     p1.append(1)
@@ -89,7 +89,14 @@ def legendre_deriv_gen(x, n):
     return p2
 
 def legendre_combo(x, n1, n2):
+    '''Convenient multiplier for two different legendre polynomials'''
     out1 = legendre_gen(x, n1)[-1]
+    out2 = legendre_gen(x, n2)[-1]
+    return out1*out2
+
+def legendre_deriv_combo(x, n1, n2):
+    '''Combines legendre basis set and legendre second deriv (based on n1) for integration'''
+    out1 = legendre_deriv_gen(x, n1)[-1]
     out2 = legendre_gen(x, n2)[-1]
     return out1*out2
 
