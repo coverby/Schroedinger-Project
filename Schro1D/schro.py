@@ -118,7 +118,7 @@ def gen_ham(V0, const, n_bs, bs, domain):
         #ham[0,0] = const*int_fun(fun2, (1,1), domain) + V0*int_fun(fun1, (1,1), domain)
         for i in range(0, n_bs):
             ham[i,i] = V0*int_fun(fun1, (i+1,i+1), domain)  #- const*int_fun(fun2, (i+1,i+1), domain)
-            for j in range(n_bs):
+            for j in range(i-1):
                 ham[i,j] = -const*int_fun(fun2, (i+1,j+1), domain) + V0*int_fun(fun1, (i+1,j+1), domain)
                 ham[j,i] = ham[i,j] #orthonormal => symmetric, so we can cheat
     else:
@@ -144,14 +144,14 @@ def write_output(idx, vout, outname):
 
 def main_handler(parafile, outfile): #pragma: no cover
     #This function coordinates the other components after initialization
-    indx, V0, const, n_bs, bs, domain = schro.read_param(test_file)
+    indx, V0, const, n_bs, bs, domain = read_param(parafile)
     idxout = []
     vout = []
-    for i in range(len(idx)):
+    for i in range(len(indx)):
         output = diagonalize(gen_ham(V0[i],const[i],n_bs[i],bs[i],domain[i]))
 
         idxout.append(i)
-        vout.append(output)
+        vout.append(output[0])
         
     write_output(idxout,vout,outfile)
 
@@ -159,6 +159,6 @@ def start(): #pragma: no cover
     #sv = SimVis()
     print("This is a 1D Numerical Shroedinger's Equation solver")
     parafile = input("Enter the name of the file containing parameter information (format in readme): ")
-    outfile = input("Enter the name of the output file to save output to")
-    main_handler()
+    outfile = input("Enter the name of the output file to save output to: ")
+    main_handler(parafile, outfile)
 

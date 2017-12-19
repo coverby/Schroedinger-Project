@@ -148,7 +148,6 @@ def test_diagonalize():
     bs = b'f'
     domain = [-1,1]
     ham = np.matrix(schro.gen_ham(V0, const, n_bs, bs, domain))
-    #The Hamiltonian should be self-adjunct so...
     eig, v = schro.diagonalize(ham)
     #print(ham)
     #print(eig)
@@ -160,14 +159,13 @@ def test_diagonalize_leg():
     '''Tests the hamiltonian diagonalizer for a legendre basis via the normalized eigenvectors '''
     V0 = 1
     const = 1
-    n_bs = 6
+    n_bs = 3
     bs = b'l'
     domain = [-1,1]
     ham = np.matrix(schro.gen_ham(V0, const, n_bs, bs, domain))
-    #The Hamiltonian should be self-adjunct so...
     eig, v = schro.diagonalize(ham)
     print(ham)
     print(eig)
     print(v)
-    print((np.absolute(v)).sum())
-    assert(np.isclose(np.diagonal(np.absolute(v)).sum(), n_bs,rtol=1.e-2))
+    print(not np.isclose(eig.sum(),0))
+    assert(not np.isclose(eig.sum(),0))
